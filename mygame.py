@@ -11,7 +11,7 @@ pygame.display.set_caption("My game")
 
 # the Surface objects
 level = pygame.image.load("level.jpg").convert()
-mario = pygame.image.load("mario.png").convert()
+player = pygame.image.load("mario.png").convert()
 fireball = pygame.image.load("fireball.png").convert()
 # pygame.image.load(file) function loads a picture "file" into a given variable
 # convert() method converts the picture into the right pixel-format
@@ -38,7 +38,7 @@ rectangle.fill(pink)
 # blit(Surface,(x,y)) adds "Surface" into coordinates (x,y)=(left, top)
 dispSurf.blit(level, (0,0))
 dispSurf.blit(fireball, (0,0))
-dispSurf.blit(mario, (400,500))
+dispSurf.blit(player, (400,500))
 dispSurf.blit(rectangle, (0,200))
 
 # the display surface needs to be updated for the blitted Surfaces to become visible
@@ -49,14 +49,14 @@ pygame.display.flip()
 # Rect objects are needed to move Surfaces and for collision detection
 # Rect(left, top, width, height) contains left/top-coordinates and width/height
 fireballArea = fireball.get_rect()
-marioArea = mario.get_rect()
+playerArea = player.get_rect()
 rectangleArea = rectangle.get_rect()
 
 # get_rect() method by default sets the left-top corner to (0,0)
 # mario and rectangle were not blitted into (0,0)
 # the left and top coordinates have to be changed with dot notation
-marioArea.left = 400
-marioArea.top = 500
+playerArea.left = 400
+playerArea.top = 500
 rectangleArea.left = 0
 rectangleArea.top = 200
 
@@ -109,19 +109,19 @@ while True:
     # get.pressed() function gives a boolean list of all the keys if they are being pressed
     pressings = pygame.key.get_pressed()
     if pressings[K_LEFT]:          # if left-key is true in the list
-        marioArea.move_ip((-1,0))  # mario will be moved one pixel left
+        playerArea.move_ip((-1,0))  # mario will be moved one pixel left
     if pressings[K_RIGHT]:
-        marioArea.move_ip((1,0))
+        playerArea.move_ip((1,0))
     if pressings[K_DOWN]:
-        marioArea.move_ip((0,1))
+        playerArea.move_ip((0,1))
     if pressings[K_UP]:
-        marioArea.move_ip((0,-1))
+        playerArea.move_ip((0,-1))
 
 
     # blit all the Surfaces in their new places
     dispSurf.blit(level, (0,0)) # without this, moving characters would have a "trace"
     dispSurf.blit(fireball, fireballArea)
-    dispSurf.blit(mario, marioArea)
+    dispSurf.blit(player, playerArea)
     dispSurf.blit(rectangle, rectangleArea)
 
 
