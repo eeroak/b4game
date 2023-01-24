@@ -4,21 +4,15 @@ from pygame.locals import * # imports the constants of pygame
 pygame.init()  # initializes pygame
 
 # the display surface
-width = 960
-height = 600
+width = 1920
+height = 1080
 dispSurf = pygame.display.set_mode((width,height))
-pygame.display.set_caption("My game")
+pygame.display.set_caption("Hissipeli")
 
 # the Surface objects
 level = pygame.image.load("level.jpg").convert()
 player = pygame.image.load("mario.png").convert()
-fireball = pygame.image.load("fireball.png").convert()
-# pygame.image.load(file) function loads a picture "file" into a given variable
-# convert() method converts the picture into the right pixel-format
-# picture files needs to be in the same folder as this python file
-# the folder path can be relative or absolute:
-# relative path: mario = pygame.image.load("folder\\mario.png").convert()
-# absolute path: fireball = pygame.image.load("C:\\folder\\fireball.png").convert()
+
 
 # empty black Surface(width, height)
 rectangle = pygame.Surface((300,50))
@@ -37,7 +31,6 @@ rectangle.fill(pink)
 # Surface objects can be added to the display surface with blit() method
 # blit(Surface,(x,y)) adds "Surface" into coordinates (x,y)=(left, top)
 dispSurf.blit(level, (0,0))
-dispSurf.blit(fireball, (0,0))
 dispSurf.blit(player, (400,500))
 dispSurf.blit(rectangle, (0,200))
 
@@ -48,7 +41,6 @@ pygame.display.flip()
 # Surface.get_rect() method returns the Rect object of "Surface"
 # Rect objects are needed to move Surfaces and for collision detection
 # Rect(left, top, width, height) contains left/top-coordinates and width/height
-fireballArea = fireball.get_rect()
 playerArea = player.get_rect()
 rectangleArea = rectangle.get_rect()
 
@@ -80,32 +72,7 @@ while True:
             if event.key == K_ESCAPE: # if the key was esc
                 pygame.quit() # the display window closes
                 sys.exit()    # the python program exits
-
-
-    # fireball will be moved by speed=[1,1] in every iteration
-    # move_ip([x,y]) changes the Rect-objects left-top coordinates by x and y
-    fireballArea.move_ip(speed)
-
-
-    # fireball bounces from the edges of the display surface
-    if fireballArea.left < 0 or fireballArea.right > width: # fireball is vertically outside the game
-        speed[0] = -speed[0] # the x-direction of the speed will be converted
-    if fireballArea.top < 0 or fireballArea.bottom > height: # fireball is horizontally outside the game
-        speed[1] = -speed[1] # the y-direction of the speed will be converted
-
-
-    # fireball bounces from the rectangle
-    if rectangleArea.colliderect(fireballArea):
-    # a.colliderect(b) returns True if Rect-objects a and b overlap
-        if rectangleArea.colliderect(fireballArea.move(-speed[0],0)):
-        # if the fireball came from vertical direction
-            speed[1] = -speed[1] # the y-direction of the speed will be converted
-        else:
-        # otherwise the fireball came from horizontal direction
-            speed[0] = -speed[0] # the x-direction of the speed will be converted
-
-
-    # mario can be moved with left/right/up/down-keys
+                
     # get.pressed() function gives a boolean list of all the keys if they are being pressed
     pressings = pygame.key.get_pressed()
     if pressings[K_LEFT]:          # if left-key is true in the list
@@ -120,7 +87,6 @@ while True:
 
     # blit all the Surfaces in their new places
     dispSurf.blit(level, (0,0)) # without this, moving characters would have a "trace"
-    dispSurf.blit(fireball, fireballArea)
     dispSurf.blit(player, playerArea)
     dispSurf.blit(rectangle, rectangleArea)
 
