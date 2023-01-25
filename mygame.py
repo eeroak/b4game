@@ -63,6 +63,7 @@ def pelin_aloitus():
             playerArea.move_ip((0,1))
             dispSurf.blit(alanappi,(280,725))
             pygame.display.flip()
+            
         if pressings[K_UP]:
             playerArea.move_ip((0,-1))
             dispSurf.blit(ylanappi,(280,200))
