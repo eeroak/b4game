@@ -1,96 +1,99 @@
+#############################pip install pygame-menu -U######################################
 import pygame
-import sys     # sys-module will be needed to exit the game
-from pygame.locals import * # imports the constants of pygame
-pygame.init()  # initializes pygame
+import pygame_menu
+import sys
+from pygame.locals import *
 
-# the display surface
+pygame.init()
 width = 1920
-height = 1080
-dispSurf = pygame.display.set_mode((width,height))
+lenght = 1080
+dispSurf = pygame.display.set_mode((width,lenght))
 pygame.display.set_caption("Hissipeli")
 
-# the Surface objects
-level = pygame.image.load("level.jpg").convert()
-player = pygame.image.load("mario.png").convert()
+# kaikki renderöitävät objektit
+level = pygame.image.load("Hissipeli_ovet_kiinni.jpg").convert()
+player = pygame.image.load("laatikko.jpg").convert()
+ylakerta = pygame.image.load("ylakerta.png").convert()
+ylanappi = pygame.image.load("ylanappi.png")
+alakerta = pygame.image.load("alakerta.png").convert()
+alanappi = pygame.image.load("alanappi.jpg").convert()
+fail1 = pygame.image.load("Hissipeli_ylaovi_auki.jpg").convert
+fail2 = pygame.image.load("Hissipeli_alaovi_auki.jpg").convert
 
+border_top = pygame.Rect(30, 125, 325, 1)
+border_btm = pygame.Rect(30, 1015, 325, 1)
 
-# empty black Surface(width, height)
-rectangle = pygame.Surface((300,50))
+# otan hissien vieressä seisovien ukkelien kuvista taustat pois
+ylakerta.set_colorkey((255, 255, 255))
+ylanappi.set_colorkey((255,255,255))
+alakerta.set_colorkey((255, 255, 255))
+alanappi.set_colorkey((255, 255, 255))
 
-# RGB-colors are tuples (r,g,b), where 0<r,g,b<255
-black = (0,0,0)
-white = (255,255,255)
-red = (255,0,0)
-green = (0,255,0)
-blue = (0,0,255)
-pink = (255,0,130)
-
-# Surface objects can be filled with a color using fill() method
-rectangle.fill(pink)
-
-# Surface objects can be added to the display surface with blit() method
-# blit(Surface,(x,y)) adds "Surface" into coordinates (x,y)=(left, top)
 dispSurf.blit(level, (0,0))
-dispSurf.blit(player, (400,500))
-dispSurf.blit(rectangle, (0,200))
+dispSurf.blit(player, (400,300))
+dispSurf.blit(ylakerta,(200,300))
+dispSurf.blit(ylanappi,(200, 300))
+dispSurf.blit(alakerta,(500,600))
+dispSurf.blit(alanappi,(500,600))
 
-# the display surface needs to be updated for the blitted Surfaces to become visible
-# pygame.display.update() would do the same
 pygame.display.flip()
 
-# Surface.get_rect() method returns the Rect object of "Surface"
-# Rect objects are needed to move Surfaces and for collision detection
-# Rect(left, top, width, height) contains left/top-coordinates and width/height
 playerArea = player.get_rect()
-rectangleArea = rectangle.get_rect()
 
-# get_rect() method by default sets the left-top corner to (0,0)
-# mario and rectangle were not blitted into (0,0)
-# the left and top coordinates have to be changed with dot notation
-playerArea.left = 400
-playerArea.top = 500
-rectangleArea.left = 0
-rectangleArea.top = 200
-
-# speed contains the [x,y]-speed of the fireball in pixels
-speed = [1,1]
+#pelaajan hahmon aloituspaikan liikuttaminen (pikseleissä)
+playerArea.left = 100
+playerArea.top = 800
 
 
+def pelin_aloitus():
+    
+    while True:
+        # looppi joka tarkastaa jos pelaaja painaa esciä tai sulkee ikkunan
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: # jos pelaaja sulkee ikkunan
+                pygame.quit()             # peli sulkeutuu
+                sys.exit()    
+            if event.type == KEYDOWN: 
+                if event.key == K_ESCAPE: # jos pelaaja painaa esciä
+                    menu.mainloop(dispSurf)# palaa takaisin päävalikkoon
+                    
+        # Hahmon ohjaustoimintoja
+        pressings = pygame.key.get_pressed()
+        if pressings[K_DOWN]:
+            playerArea.move_ip((0,1))
+            dispSurf.blit(alanappi,(280,725))
+            pygame.display.flip()
+        if pressings[K_UP]:
+            playerArea.move_ip((0,-1))
+            dispSurf.blit(ylanappi,(280,200))
+            pygame.display.flip()
+        
+        # renderöi kaikki objektit tarkoille paikoilleen
+        dispSurf.blit(level, (0,0)) # jos tätä ei tehdä, kaikesta liikkuvasta jää niin sanottu jälki perään
+        dispSurf.blit(player, playerArea)
+        dispSurf.blit(ylakerta,(280,200))
+        dispSurf.blit(alakerta,(280,725))
+        pygame.draw.rect(dispSurf, (255,255,255), border_top)
+        pygame.draw.rect(dispSurf, (255,255,255), border_btm)
 
+        # tässä päivitetään esim. näppäimenpainallukset ruudulle aina loopin lopussa
+        pygame.display.flip()
+        pass
 
+menu = pygame_menu.Menu('Hissipeli', 1920, 1080, center_content=True, 
+                        mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="1",
+                        )
+asetukset = pygame_menu.Menu('Asetukset', 1280, 720, center_content=True, 
+                         mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="2",)
 
-# the game loop which runs until sys.exit()
-while True:
+#Päävalikon määrittelyä
+menu.add.button("Pelaa", pelin_aloitus)
+menu.add.button("Asetukset", asetukset,)
+menu.add.button("Lopeta", pygame_menu.events.EXIT)
 
+#Asetussivun määrittely
+asetukset.add.range_slider('Äänenvoimakkuus', 50, (0,100), 1, 
+                           value_format=lambda x: str(int(x))) #muokkaa sliderin näyttämään vain kokonaislukuja
+asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
 
-    # loop to check if the user has closed the display window or pressed esc
-    for event in pygame.event.get():  # list of all the events in the event queue
-        if event.type == pygame.QUIT: # if the player closed the window
-            pygame.quit() # the display window closes
-            sys.exit()    # the python program exits
-        if event.type == KEYDOWN:     # if the player pressed down any key
-            if event.key == K_ESCAPE: # if the key was esc
-                pygame.quit() # the display window closes
-                sys.exit()    # the python program exits
-                
-    # get.pressed() function gives a boolean list of all the keys if they are being pressed
-    pressings = pygame.key.get_pressed()
-    if pressings[K_LEFT]:          # if left-key is true in the list
-        playerArea.move_ip((-1,0))  # mario will be moved one pixel left
-    if pressings[K_RIGHT]:
-        playerArea.move_ip((1,0))
-    if pressings[K_DOWN]:
-        playerArea.move_ip((0,1))
-    if pressings[K_UP]:
-        playerArea.move_ip((0,-1))
-
-
-    # blit all the Surfaces in their new places
-    dispSurf.blit(level, (0,0)) # without this, moving characters would have a "trace"
-    dispSurf.blit(player, playerArea)
-    dispSurf.blit(rectangle, rectangleArea)
-
-
-    # updating the display surface is always needed at the end of each iteration of game loop
-    pygame.display.flip()
-
+menu.mainloop(dispSurf)
