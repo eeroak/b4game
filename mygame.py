@@ -2,6 +2,7 @@ import pygame as pg
 import pygame_menu
 import sys
 import ctypes
+from pygame_menu import sound
 from pygame.locals import *
 from pygame import mixer
 
@@ -31,15 +32,15 @@ border_top = pg.Rect(30, 125, 325, 1)
 border_btm = pg.Rect(30, 1015, 325, 1)
 
 # otan hissien vieressä seisovien ukkelien kuvista taustat pois
-ylakerta.set_colorkey((255, 255, 255))
+ylakerta.set_colorkey((255,255,255))
 ylanappi.set_colorkey((255,255,255))
-alakerta.set_colorkey((255, 255, 255))
-alanappi.set_colorkey((255, 255, 255))
+alakerta.set_colorkey((255,255,255))
+alanappi.set_colorkey((255,255,255))
 
 dispSurf.blit(level, (0,0))
 dispSurf.blit(player, (400,300))
 dispSurf.blit(ylakerta,(200,300))
-dispSurf.blit(ylanappi,(200, 300))
+dispSurf.blit(ylanappi,(200,300))
 dispSurf.blit(alakerta,(500,600))
 dispSurf.blit(alanappi,(500,600))
 
@@ -51,6 +52,10 @@ playerArea = player.get_rect()
 playerArea.left = 100
 playerArea.top = 800
 
+# pelin taustaäänet/valikkoäänet
+sEngine = sound.Sound()
+sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
+sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
 """ mixer.init()
 mixer.music.load('Doom.ogg')
 mixer.music.play(-1)
@@ -98,11 +103,13 @@ asetukset = pygame_menu.Menu('Asetukset', 1280, 720, center_content=True,
                          mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="2",)
 
 #Päävalikon määrittelyä
+menu.set_sound(sEngine, recursive=True)
 menu.add.button("Pelaa", pelin_aloitus)
 menu.add.button("Asetukset", asetukset,)
 menu.add.button("Lopeta", pygame_menu.events.EXIT)
 
 #Asetussivun määrittely
+asetukset.set_sound(sEngine, recursive=True)
 asetukset.add.range_slider('Äänenvoimakkuus', 50, (0,100), 1, 
                            value_format=lambda x: str(int(x))) #muokkaa sliderin näyttämään vain kokonaislukuja
 asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
