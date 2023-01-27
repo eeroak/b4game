@@ -47,7 +47,7 @@ playerArea.top = 800
 
 mixer.init()
 mixer.music.load('Doom.ogg')
-mixer.music.play()
+mixer.music.play(-1)
 
 def pelin_aloitus():
     
