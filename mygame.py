@@ -2,14 +2,18 @@
 import pygame
 import pygame_menu
 import sys
+import ctypes
 from pygame.locals import *
 from pygame import mixer
 
 pygame.init()
+ctypes.windll.user32.SetProcessDPIAware()
+true_res = (ctypes.windll.user32.GetSystemMetrics(0),ctypes.windll.user32.GetSystemMetrics(1))
 width = 1920
 lenght = 1080
-dispSurf = pygame.display.set_mode((width,lenght))
+dispSurf = pygame.display.set_mode((true_res), RESIZABLE, vsync=1)
 pygame.display.set_caption("Hissipeli")
+
 
 # kaikki renderöitävät objektit
 level = pygame.image.load("Hissipeli_ovet_kiinni.jpg").convert()
