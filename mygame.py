@@ -3,6 +3,7 @@ import pygame
 import pygame_menu
 import sys
 from pygame.locals import *
+from pygame import mixer
 
 pygame.init()
 width = 1920
@@ -44,6 +45,9 @@ playerArea = player.get_rect()
 playerArea.left = 100
 playerArea.top = 800
 
+mixer.init()
+mixer.music.load('Doom.ogg')
+mixer.music.play()
 
 def pelin_aloitus():
     
