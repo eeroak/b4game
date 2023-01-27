@@ -1,34 +1,34 @@
-import pygame
+import pygame as pg
 import pygame_menu
 import sys
 import ctypes
 from pygame.locals import *
 from pygame import mixer
 
-pygame.init()
+pg.init()
 
 #tekee näytön skaalauksesta mukautuvan jokaiselle resoluutiolle (alle full HD tuskin toimii kunnolla)
 user32 = ctypes.windll.user32
 user32.SetProcessDPIAware(2)
 width = 1920
 lenght = 1080
-dispSurf = pygame.display.set_mode((width,lenght), vsync=1)
-pygame.display.set_caption("Hissipeli")
+dispSurf = pg.display.set_mode((width,lenght), vsync=1)
+pg.display.set_caption("Hissipeli")
 
 
 # kaikki renderöitävät objektit
-level = pygame.image.load("Hissipeli_ovet_kiinni.jpg").convert()
-player = pygame.image.load("laatikko.jpg").convert()
-ylakerta = pygame.image.load("ylakerta.png").convert()
-ylanappi = pygame.image.load("ylanappi.png")
-alakerta = pygame.image.load("alakerta.png").convert()
-alanappi = pygame.image.load("alanappi.jpg").convert()
-fail1 = pygame.image.load("Hissipeli_ylaovi_auki.jpg").convert
-fail2 = pygame.image.load("Hissipeli_alaovi_auki.jpg").convert
+level = pg.image.load("Hissipeli_ovet_kiinni.jpg").convert()
+player = pg.image.load("laatikko.jpg").convert()
+ylakerta = pg.image.load("ylakerta.png").convert()
+ylanappi = pg.image.load("ylanappi.png")
+alakerta = pg.image.load("alakerta.png").convert()
+alanappi = pg.image.load("alanappi.jpg").convert()
+fail1 = pg.image.load("Hissipeli_ylaovi_auki.jpg").convert
+fail2 = pg.image.load("Hissipeli_alaovi_auki.jpg").convert
 
 # pelaajan rajojen placeholderit
-border_top = pygame.Rect(30, 125, 325, 1)
-border_btm = pygame.Rect(30, 1015, 325, 1)
+border_top = pg.Rect(30, 125, 325, 1)
+border_btm = pg.Rect(30, 1015, 325, 1)
 
 # otan hissien vieressä seisovien ukkelien kuvista taustat pois
 ylakerta.set_colorkey((255, 255, 255))
@@ -43,7 +43,7 @@ dispSurf.blit(ylanappi,(200, 300))
 dispSurf.blit(alakerta,(500,600))
 dispSurf.blit(alanappi,(500,600))
 
-pygame.display.flip()
+pg.display.flip()
 
 playerArea = player.get_rect()
 
@@ -59,36 +59,36 @@ def pelin_aloitus():
     
     while True:
         # looppi joka tarkastaa jos pelaaja painaa esciä tai sulkee ikkunan
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT: # jos pelaaja sulkee ikkunan
-                pygame.quit()             # peli sulkeutuu
+        for event in pg.event.get(): 
+            if event.type == pg.QUIT: # jos pelaaja sulkee ikkunan
+                pg.quit()             # peli sulkeutuu
                 sys.exit()    
             if event.type == KEYDOWN: 
                 if event.key == K_ESCAPE: # jos pelaaja painaa esciä
                     menu.mainloop(dispSurf)# palaa takaisin päävalikkoon
                     
         # Hahmon ohjaustoimintoja
-        pressings = pygame.key.get_pressed()
+        pressings = pg.key.get_pressed()
         if pressings[K_DOWN]:
             playerArea.move_ip((0,1))
             dispSurf.blit(alanappi,(280,725))
-            pygame.display.flip()
+            pg.display.flip()
             
         if pressings[K_UP]:
             playerArea.move_ip((0,-1))
             dispSurf.blit(ylanappi,(280,200))
-            pygame.display.flip()
+            pg.display.flip()
         
         # renderöi kaikki objektit tarkoille paikoilleen
         dispSurf.blit(level, (0,0)) # jos tätä ei tehdä, kaikesta liikkuvasta jää niin sanottu jälki perään
         dispSurf.blit(player, playerArea)
         dispSurf.blit(ylakerta,(280,200))
         dispSurf.blit(alakerta,(280,725))
-        pygame.draw.rect(dispSurf, (255,255,255), border_top)
-        pygame.draw.rect(dispSurf, (255,255,255), border_btm)
+        pg.draw.rect(dispSurf, (255,255,255), border_top)
+        pg.draw.rect(dispSurf, (255,255,255), border_btm)
 
         # tässä päivitetään esim. näppäimenpainallukset ruudulle aina loopin lopussa
-        pygame.display.flip()
+        pg.display.flip()
         pass
 
 menu = pygame_menu.Menu('Hissipeli', 1920, 1080, center_content=True, 
