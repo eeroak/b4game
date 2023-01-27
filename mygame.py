@@ -1,4 +1,3 @@
-#############################pip install pygame-menu -U######################################
 import pygame
 import pygame_menu
 import sys
@@ -7,11 +6,13 @@ from pygame.locals import *
 from pygame import mixer
 
 pygame.init()
-ctypes.windll.user32.SetProcessDPIAware()
-true_res = (ctypes.windll.user32.GetSystemMetrics(0),ctypes.windll.user32.GetSystemMetrics(1))
+
+#tekee näytön skaalauksesta mukautuvan jokaiselle resoluutiolle (alle full HD tuskin toimii kunnolla)
+user32 = ctypes.windll.user32
+user32.SetProcessDPIAware(2)
 width = 1920
 lenght = 1080
-dispSurf = pygame.display.set_mode((true_res), RESIZABLE, vsync=1)
+dispSurf = pygame.display.set_mode((width,lenght), vsync=1)
 pygame.display.set_caption("Hissipeli")
 
 
@@ -25,6 +26,7 @@ alanappi = pygame.image.load("alanappi.jpg").convert()
 fail1 = pygame.image.load("Hissipeli_ylaovi_auki.jpg").convert
 fail2 = pygame.image.load("Hissipeli_alaovi_auki.jpg").convert
 
+# pelaajan rajojen placeholderit
 border_top = pygame.Rect(30, 125, 325, 1)
 border_btm = pygame.Rect(30, 1015, 325, 1)
 
@@ -49,10 +51,10 @@ playerArea = player.get_rect()
 playerArea.left = 100
 playerArea.top = 800
 
-mixer.init()
+""" mixer.init()
 mixer.music.load('Doom.ogg')
 mixer.music.play(-1)
-
+ """
 def pelin_aloitus():
     
     while True:
