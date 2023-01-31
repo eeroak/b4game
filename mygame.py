@@ -2,6 +2,8 @@ import pygame as pg
 import pygame_menu
 import sys
 import ctypes
+import random
+from random import randrange
 from pygame_menu import sound
 from pygame.locals import *
 from pygame import mixer
@@ -24,8 +26,8 @@ ylakerta = pg.image.load("ylakerta.png").convert()
 ylanappi = pg.image.load("ylanappi.png")
 alakerta = pg.image.load("alakerta.png").convert()
 alanappi = pg.image.load("alanappi.jpg").convert()
-fail1 = pg.image.load("Hissipeli_ylaovi_auki.jpg").convert
-fail2 = pg.image.load("Hissipeli_alaovi_auki.jpg").convert
+#fail1 = pg.image.load("Hissipeli_ylaovi_auki.jpg").convert # ei toimi vielä
+#fail2 = pg.image.load("Hissipeli_alaovi_auki.jpg").convert
 
 # pelaajan rajojen placeholderit
 border_top = pg.Rect(30, 125, 325, 1)
@@ -53,13 +55,23 @@ playerArea.left = 100
 playerArea.top = 800
 
 # pelin taustaäänet/valikkoäänet
+mixer.init()
+mixer.music.load('Doom.ogg')
+mixer.music.play(-1)
+#mixer.music.set_volume(vol)
 sEngine = sound.Sound()
 sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
 sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
-""" mixer.init()
-mixer.music.load('Doom.ogg')
-mixer.music.play(-1)
- """
+
+
+def change_background_color(value, surface, color):
+    name, index = value
+    print("Change color to", name)
+    if color == (-1, -1, -1):
+        # Generate a random color
+        color = (randrange(0, 255), randrange(0, 255), randrange(0, 255))
+    surface.fill(color)
+
 def pelin_aloitus():
     
     while True:
@@ -109,9 +121,18 @@ menu.add.button("Asetukset", asetukset,)
 menu.add.button("Lopeta", pygame_menu.events.EXIT)
 
 #Asetussivun määrittely
+
+
 asetukset.set_sound(sEngine, recursive=True)
-asetukset.add.range_slider('Äänenvoimakkuus', 50, (0,100), 1, 
+asetukset.add.range_slider('Äänenvoimakkuus', 1, (0,10), 1, 
                            value_format=lambda x: str(int(x))) #muokkaa sliderin näyttämään vain kokonaislukuja
+asetukset.add.selector('Current color',
+                  # list of (Text, parameters...)
+                  [('Default', dispSurf, (128, 0, 128)),
+                   ('Black', dispSurf, (0, 0, 0)),
+                   ('Blue', dispSurf, (0, 0, 255)),
+                   ('Random', dispSurf, (-1, -1, -1))],
+                  onchange=change_background_color)
 asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
 
 menu.mainloop(dispSurf)
