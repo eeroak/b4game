@@ -60,6 +60,7 @@ sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
 mixer.music.load('Doom.ogg')
 mixer.music.play(-1)
  """
+
 def pelin_aloitus():
     
     while True:
