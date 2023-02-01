@@ -58,19 +58,17 @@ playerArea.top = 800
 mixer.init()
 mixer.music.load('Doom.ogg')
 mixer.music.play(-1)
-#mixer.music.set_volume(vol)
+mixer.music.set_volume(0.5)
 sEngine = sound.Sound()
 sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
 sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
 
 
-def change_background_color(value, surface, color):
-    name, index = value
-    print("Change color to", name)
-    if color == (-1, -1, -1):
-        # Generate a random color
-        color = (randrange(0, 255), randrange(0, 255), randrange(0, 255))
-    surface.fill(color)
+def change_vol(value):
+    vol = value
+    mixer.music.set_volume(vol)
+    print("Changed game volume to", vol)
+    
 
 def pelin_aloitus():
     
@@ -121,18 +119,11 @@ menu.add.button("Asetukset", asetukset,)
 menu.add.button("Lopeta", pygame_menu.events.EXIT)
 
 #Asetussivun määrittely
-
-
 asetukset.set_sound(sEngine, recursive=True)
-asetukset.add.range_slider('Äänenvoimakkuus', 1, (0,10), 1, 
-                           value_format=lambda x: str(int(x))) #muokkaa sliderin näyttämään vain kokonaislukuja
-asetukset.add.selector('Current color',
-                  # list of (Text, parameters...)
-                  [('Default', dispSurf, (128, 0, 128)),
-                   ('Black', dispSurf, (0, 0, 0)),
-                   ('Blue', dispSurf, (0, 0, 255)),
-                   ('Random', dispSurf, (-1, -1, -1))],
-                  onchange=change_background_color)
+asetukset.add.range_slider('Äänenvoimakkuus', 0.5, (0.0,1), 0.1, 
+                          value_format=lambda x: str((x)), onchange=change_vol) # äänenvoimakkuuden säätö, joka ottaa rangesliderin arvon, tallentaa sen muuttujaan value
+                                                                                # ja antaa sen funktiolle change_vol
+
 asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
 
 menu.mainloop(dispSurf)
