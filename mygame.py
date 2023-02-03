@@ -60,14 +60,16 @@ playerArea.left = 30
 playerArea.top = 723
 
 # pelin taustaäänet/valikkoäänet
-""" mixer.init() 
+mixer.init() 
 mixer.music.load('Doom.ogg')
 mixer.music.play(-1)
-mixer.music.set_volume(0.5) """
+mixer.music.set_volume(0.5)
 sEngine = sound.Sound()
 sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
 sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
 
+press_down = False
+press_up = False
 
 def change_vol(value):
     vol = value
@@ -86,16 +88,24 @@ def pelin_aloitus():
             if event.type == KEYDOWN: 
                 if event.key == K_ESCAPE: # jos pelaaja painaa esciä
                     menu.mainloop(dispSurf)# palaa takaisin päävalikkoon
+
+            if event.type == KEYDOWN and event.key == K_DOWN:
+                global press_down
+                global press_up
+                press_down = True
+                press_up = False
+            if event.type == KEYDOWN and event.key == K_UP:
+                press_down = False
+                press_up = True  
                     
         # Hahmon ohjaustoimintoja
-        pressings = pg.key.get_pressed()
-        if pressings[K_DOWN]:
-            playerArea.move_ip((0,1))
+        if press_down:
+            playerArea.move_ip((0,2))
             dispSurf.blit(alanappi,(280,725))
             pg.display.flip()
-            
-        if pressings[K_UP]:
-            playerArea.move_ip((0,-1))
+
+        if press_up:
+            playerArea.move_ip((0,-2))
             dispSurf.blit(ylanappi,(280,200))
             pg.display.flip()
         
