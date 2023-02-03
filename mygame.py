@@ -99,6 +99,7 @@ def pelin_aloitus():
     pg.draw.rect(dispSurf, (255,255,255), border_btm)
 
     while True:
+
         # looppi joka tarkastaa jos pelaaja painaa esciä tai sulkee ikkunan
         for event in pg.event.get(): 
             if event.type == pg.QUIT: # jos pelaaja sulkee ikkunan((
@@ -106,15 +107,7 @@ def pelin_aloitus():
                 sys.exit()    
             if event.type == KEYDOWN: 
                 if event.key == K_ESCAPE: # jos pelaaja painaa esciä
-                    menu()  # palaa takaisin päävalikkoon
-
-            if event.type == KEYDOWN and event.key == K_DOWN:
-                global press_down, press_up
-                press_down = True
-                press_up = False
-            if event.type == KEYDOWN and event.key == K_UP:
-                press_down = False
-                press_up = True  
+                    menu.mainloop(dispSurf)# palaa takaisin päävalikkoon
                     
         # Hahmon ohjaustoimintoja
         if press_down:
