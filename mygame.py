@@ -1,8 +1,8 @@
-from time import sleep
 import pygame as pg
 import pygame_menu
 import sys
 import ctypes
+from time import sleep
 from pygame_menu import sound
 from pygame.locals import *
 from pygame import mixer
@@ -15,7 +15,6 @@ user32.SetProcessDPIAware(2)
 width = 1920
 lenght = 1080
 dispSurf = pg.display.set_mode((width,lenght), vsync=1)
-#dispFail = pg.display.set_mode((width,lenght), vsync=1)
 pg.display.set_caption("Hissipeli")
 
 # kaikki renderöitävät objektit
@@ -67,6 +66,7 @@ press_down = False
 press_up = False
 
 def failup():
+    pg.display.flip()
     global press_up
     press_up=False
 
@@ -86,6 +86,8 @@ def change_vol(value):
     print("Changed game volume to", vol)
     
 def pelin_aloitus():
+
+    pg.init()
     pg.display.flip()
     playerArea.left = 30
     playerArea.top = 723
@@ -147,25 +149,35 @@ def pelin_aloitus():
         pass
 
 def menu():
-    menu = pygame_menu.Menu('Hissipeli', 1920, 1080, center_content=True, 
-                            mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="1",
+    mytheme = pygame_menu.themes.THEME_DARK.copy()
+    myimage = pygame_menu.baseimage.BaseImage(("Hissipeli.jpg"),
+        drawing_mode = pygame_menu.baseimage.IMAGE_MODE_REPEAT_XY
+    )
+    mytheme.background_color = myimage
+    menu = pygame_menu.Menu("",1920, 1080, center_content=True, 
+                            mouse_enabled=True, theme=mytheme, menu_id="1",
                             )
     asetukset = pygame_menu.Menu('Asetukset', 1280, 720, center_content=True, 
                             mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="2",)
+    ohjeet = pygame_menu.Menu ('Ohjeet', 1280, 720, center_content=True,
+                           mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="3",)                        
 
     #Päävalikon määrittelyä
     menu.set_sound(sEngine, recursive=True)
-    menu.add.button("Pelaa", pelin_aloitus)
-    menu.add.button("Asetukset", asetukset,)
-    menu.add.button("Lopeta", pygame_menu.events.EXIT)
-
+    menu.add.button("Pelaa", pelin_aloitus, accept_kwargs = True, background_color = (0,0,0))
+    menu.add.button("Asetukset", asetukset, accept_kwargs = True, background_color = (0,0,0))
+    menu.add.button("Ohjeet", ohjeet, accept_kwargs = True, background_color = (0,0,0))
+    menu.add.button("Lopeta", pygame_menu.events.EXIT, accept_kwargs = True, background_color = (0,0,0))
     #Asetussivun määrittely
     asetukset.set_sound(sEngine, recursive=True)
     asetukset.add.range_slider('Äänenvoimakkuus', 0.5, (0.0,1), 0.1, 
-                            value_format=lambda x: str((x)), onchange=change_vol) # äänenvoimakkuuden säätö, joka ottaa rangesliderin arvon, tallentaa sen muuttujaan value
-                                                                                    # ja antaa sen funktiolle change_vol
-
+                            value_format=lambda x: str((x)), onchange=change_vol) # äänenvoimakkuuden säätö, joka ottaa rangesliderin arvon, tallentaa sen muuttujaan valueja antaa sen funktiolle change_vol
     asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
+    # Peliohjeet
+    ohjeet.set_sound(sEngine, recursive=True)
+    ohjeet.add.text_input("Paina NUOLIALAS näppäintä kun hissi saavuttaa ylätasanteen")
+    ohjeet.add.text_input("Paina NUOLIYLÖS näppäintä kun hissi saavuttaa alatasanteen")
+    ohjeet.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
 
     menu.mainloop(dispSurf)
 menu()
