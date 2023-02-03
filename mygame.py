@@ -73,6 +73,7 @@ def change_vol(value):
 def pelin_aloitus():
     
     while True:
+
         # looppi joka tarkastaa jos pelaaja painaa esciä tai sulkee ikkunan
         for event in pg.event.get(): 
             if event.type == pg.QUIT: # jos pelaaja sulkee ikkunan
@@ -81,7 +82,7 @@ def pelin_aloitus():
             if event.type == KEYDOWN: 
                 if event.key == K_ESCAPE: # jos pelaaja painaa esciä
                     menu.mainloop(dispSurf)# palaa takaisin päävalikkoon
-                    
+                          
         # Hahmon ohjaustoimintoja
         pressings = pg.key.get_pressed()
         if pressings[K_DOWN]:
