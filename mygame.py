@@ -21,16 +21,17 @@ pg.display.set_caption("Hissipeli")
 
 # kaikki renderöitävät objektit
 level = pg.image.load("Hissipeli_ovet_kiinni.jpg").convert()
-player = pg.image.load("laatikko.jpg").convert()
+player = pg.image.load("hissiukko ilo.png").convert()
 ylakerta = pg.image.load("ylakerta.png").convert()
 ylanappi = pg.image.load("ylanappi.png")
 alakerta = pg.image.load("alakerta.png").convert()
 alanappi = pg.image.load("alanappi.jpg").convert()
+suru = pg.image.load("hissiukko suru.png").convert()
 #fail1 = pg.image.load("Hissipeli_ylaovi_auki.jpg").convert # ei toimi vielä
 #fail2 = pg.image.load("Hissipeli_alaovi_auki.jpg").convert
 
 # pelaajan rajojen placeholderit
-border_top = pg.Rect(30, 125, 325, 1)
+border_top = pg.Rect(30, 220, 325, 1)
 border_btm = pg.Rect(30, 1015, 325, 1)
 
 # otan hissien vieressä seisovien ukkelien kuvista taustat pois
@@ -38,6 +39,9 @@ ylakerta.set_colorkey((255,255,255))
 ylanappi.set_colorkey((255,255,255))
 alakerta.set_colorkey((255,255,255))
 alanappi.set_colorkey((255,255,255))
+player.set_colorkey((255,255,255))
+suru.set_colorkey((255,255,255))
+
 
 dispSurf.blit(level, (0,0))
 dispSurf.blit(player, (400,300))
@@ -45,20 +49,21 @@ dispSurf.blit(ylakerta,(200,300))
 dispSurf.blit(ylanappi,(200,300))
 dispSurf.blit(alakerta,(500,600))
 dispSurf.blit(alanappi,(500,600))
+dispSurf.blit(suru, (400,300))
 
 pg.display.flip()
 
 playerArea = player.get_rect()
 
 #pelaajan hahmon aloituspaikan liikuttaminen (pikseleissä)
-playerArea.left = 100
-playerArea.top = 800
+playerArea.left = 30
+playerArea.top = 723
 
 # pelin taustaäänet/valikkoäänet
-mixer.init()
+""" mixer.init() 
 mixer.music.load('Doom.ogg')
 mixer.music.play(-1)
-mixer.music.set_volume(0.5)
+mixer.music.set_volume(0.5) """
 sEngine = sound.Sound()
 sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
 sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
