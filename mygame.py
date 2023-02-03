@@ -54,10 +54,10 @@ playerArea.left = 30
 playerArea.top = 723
 
 # pelin taustaäänet/valikkoäänet
-""" mixer.init() 
+mixer.init() 
 mixer.music.load('Doom.ogg')
 mixer.music.play(-1)
-mixer.music.set_volume(0.5) """
+mixer.music.set_volume(0.5)
 sEngine = sound.Sound()
 sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
 sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
