@@ -1,9 +1,8 @@
+from time import sleep
 import pygame as pg
 import pygame_menu
 import sys
 import ctypes
-import random
-from random import randrange
 from pygame_menu import sound
 from pygame.locals import *
 from pygame import mixer
@@ -16,8 +15,8 @@ user32.SetProcessDPIAware(2)
 width = 1920
 lenght = 1080
 dispSurf = pg.display.set_mode((width,lenght), vsync=1)
+#dispFail = pg.display.set_mode((width,lenght), vsync=1)
 pg.display.set_caption("Hissipeli")
-
 
 # kaikki renderöitävät objektit
 level = pg.image.load("Hissipeli_ovet_kiinni.jpg").convert()
@@ -26,9 +25,7 @@ ylakerta = pg.image.load("ylakerta.png").convert()
 ylanappi = pg.image.load("ylanappi.png")
 alakerta = pg.image.load("alakerta.png").convert()
 alanappi = pg.image.load("alanappi.jpg").convert()
-suru = pg.image.load("hissiukko suru.png").convert()
-#fail1 = pg.image.load("Hissipeli_ylaovi_auki.jpg").convert # ei toimi vielä
-#fail2 = pg.image.load("Hissipeli_alaovi_auki.jpg").convert
+gover = pg.image.load("gameover.jpg").convert()
 
 # pelaajan rajojen placeholderit
 border_top = pg.Rect(30, 220, 325, 1)
@@ -40,8 +37,6 @@ ylanappi.set_colorkey((255,255,255))
 alakerta.set_colorkey((255,255,255))
 alanappi.set_colorkey((255,255,255))
 player.set_colorkey((255,255,255))
-suru.set_colorkey((255,255,255))
-
 
 dispSurf.blit(level, (0,0))
 dispSurf.blit(player, (400,300))
@@ -49,7 +44,7 @@ dispSurf.blit(ylakerta,(200,300))
 dispSurf.blit(ylanappi,(200,300))
 dispSurf.blit(alakerta,(500,600))
 dispSurf.blit(alanappi,(500,600))
-dispSurf.blit(suru, (400,300))
+dispSurf.blit(gover,(0,0))
 
 pg.display.flip()
 
@@ -60,10 +55,10 @@ playerArea.left = 30
 playerArea.top = 723
 
 # pelin taustaäänet/valikkoäänet
-mixer.init() 
+""" mixer.init() 
 mixer.music.load('Doom.ogg')
 mixer.music.play(-1)
-mixer.music.set_volume(0.5)
+mixer.music.set_volume(0.5) """
 sEngine = sound.Sound()
 sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
 sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
@@ -71,14 +66,36 @@ sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
 press_down = False
 press_up = False
 
+def failup():
+    global press_up
+    press_up=False
+
+def failbtm():
+    global press_down
+    press_down = False
+
+def game_over():
+    print("game over")
+    dispSurf.blit(gover,(0,0))
+    pg.display.flip()
+    sleep(3.5)
+
 def change_vol(value):
     vol = value
     mixer.music.set_volume(vol)
     print("Changed game volume to", vol)
     
-
 def pelin_aloitus():
-    
+    pg.display.flip()
+    playerArea.left = 30
+    playerArea.top = 723
+    dispSurf.blit(level, (0,0))
+    dispSurf.blit(player, playerArea)
+    dispSurf.blit(ylakerta,(280,200))
+    dispSurf.blit(alakerta,(280,725))
+    pg.draw.rect(dispSurf, (255,255,255), border_top)
+    pg.draw.rect(dispSurf, (255,255,255), border_btm)
+
     while True:
         # looppi joka tarkastaa jos pelaaja painaa esciä tai sulkee ikkunan
         for event in pg.event.get(): 
@@ -90,8 +107,7 @@ def pelin_aloitus():
                     menu.mainloop(dispSurf)# palaa takaisin päävalikkoon
 
             if event.type == KEYDOWN and event.key == K_DOWN:
-                global press_down
-                global press_up
+                global press_down, press_up
                 press_down = True
                 press_up = False
             if event.type == KEYDOWN and event.key == K_UP:
@@ -103,12 +119,21 @@ def pelin_aloitus():
             playerArea.move_ip((0,2))
             dispSurf.blit(alanappi,(280,725))
             pg.display.flip()
-
         if press_up:
             playerArea.move_ip((0,-2))
             dispSurf.blit(ylanappi,(280,200))
             pg.display.flip()
-        
+
+        # Häviämistoiminnot
+        if playerArea.y == border_top.y + border_top.height: #Jos pelaaja osuu ylärajaan, peli päättyy
+            failup()
+            game_over()
+            break
+            
+        if playerArea.y == border_btm.y - playerArea.height: #Jos pelaaja osuu alarajaan, peli päättyy
+            failbtm()
+            game_over()
+            break
         # renderöi kaikki objektit tarkoille paikoilleen
         dispSurf.blit(level, (0,0)) # jos tätä ei tehdä, kaikesta liikkuvasta jää niin sanottu jälki perään
         dispSurf.blit(player, playerArea)
@@ -121,24 +146,26 @@ def pelin_aloitus():
         pg.display.flip()
         pass
 
-menu = pygame_menu.Menu('Hissipeli', 1920, 1080, center_content=True, 
-                        mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="1",
-                        )
-asetukset = pygame_menu.Menu('Asetukset', 1280, 720, center_content=True, 
-                         mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="2",)
+def menu():
+    menu = pygame_menu.Menu('Hissipeli', 1920, 1080, center_content=True, 
+                            mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="1",
+                            )
+    asetukset = pygame_menu.Menu('Asetukset', 1280, 720, center_content=True, 
+                            mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="2",)
 
-#Päävalikon määrittelyä
-menu.set_sound(sEngine, recursive=True)
-menu.add.button("Pelaa", pelin_aloitus)
-menu.add.button("Asetukset", asetukset,)
-menu.add.button("Lopeta", pygame_menu.events.EXIT)
+    #Päävalikon määrittelyä
+    menu.set_sound(sEngine, recursive=True)
+    menu.add.button("Pelaa", pelin_aloitus)
+    menu.add.button("Asetukset", asetukset,)
+    menu.add.button("Lopeta", pygame_menu.events.EXIT)
 
-#Asetussivun määrittely
-asetukset.set_sound(sEngine, recursive=True)
-asetukset.add.range_slider('Äänenvoimakkuus', 0.5, (0.0,1), 0.1, 
-                          value_format=lambda x: str((x)), onchange=change_vol) # äänenvoimakkuuden säätö, joka ottaa rangesliderin arvon, tallentaa sen muuttujaan value
-                                                                                # ja antaa sen funktiolle change_vol
+    #Asetussivun määrittely
+    asetukset.set_sound(sEngine, recursive=True)
+    asetukset.add.range_slider('Äänenvoimakkuus', 0.5, (0.0,1), 0.1, 
+                            value_format=lambda x: str((x)), onchange=change_vol) # äänenvoimakkuuden säätö, joka ottaa rangesliderin arvon, tallentaa sen muuttujaan value
+                                                                                    # ja antaa sen funktiolle change_vol
 
-asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
+    asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
 
-menu.mainloop(dispSurf)
+    menu.mainloop(dispSurf)
+menu()
