@@ -52,6 +52,8 @@ pg.display.flip()
 
 playerArea = player.get_rect()
 
+
+
 #pelaajan hahmon aloituspaikan liikuttaminen (pikseleissä)
 playerArea.left = 30
 playerArea.top = 710
@@ -73,6 +75,7 @@ scorefont = pg.font.SysFont("comicsansmms", 25)
 
 
 points = 0
+
 def score():
     global points
     #for event in pg.event.get():
@@ -110,13 +113,6 @@ def pelin_aloitus():
     global tickit
     global points
     tickit = pg.time.get_ticks()
-    global vel
-    vel = 1
-    #pg.time.get_ticks()
-   # if tickit < 100000:
-    #    vel = 10
-    #else:
-    #    vel = 1
     pg.display.flip()
     playerArea.left = 30
     playerArea.top = 723
@@ -127,9 +123,17 @@ def pelin_aloitus():
     pg.draw.rect(dispSurf, (255,255,255), border_top)
     pg.draw.rect(dispSurf, (255,255,255), border_btm)
     aika = 3000
+    vel = 1.0
+
+    
 
     while True:
-        pg.time.set_timer(vel + 100, 500)
+        if points > 5:
+            vel = 2
+        if points > 10:
+            vel = 3
+
+        
         # looppi joka tarkastaa jos pelaaja painaa esciä tai sulkee ikkunan
         for event in pg.event.get(): 
             if event.type == pg.QUIT: # jos pelaaja sulkee ikkunan
