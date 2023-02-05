@@ -54,7 +54,7 @@ playerArea = player.get_rect()
 
 #pelaajan hahmon aloituspaikan liikuttaminen (pikseleissä)
 playerArea.left = 30
-playerArea.top = 723
+playerArea.top = 710
 
 # pelin taustaäänet/valikkoäänet
 """ mixer.init() 
@@ -75,13 +75,13 @@ scorefont = pg.font.SysFont("comicsansmms", 25)
 points = 0
 def score():
     global points
-    for event in pg.event.get():
-        if event.type == KEYDOWN and event.key == K_UP:
-            points +=1
-            print(points, "up")
-        if event.type == KEYDOWN and event.key == K_DOWN:
-            points +=1
-            print(points, "down")
+    #for event in pg.event.get():
+        #if event.type == KEYDOWN and event.key == K_UP:
+            #points +=1
+            #print(points, "up")
+        #if event.type == KEYDOWN and event.key == K_DOWN:
+            #points +=1
+            #print(points, "down")
     text = scorefont.render("SCORE: "+ str(points), True, black)
     dispSurf.blit(text, (1810,0))
     pg.display.flip()
@@ -108,14 +108,15 @@ def change_vol(value):
 def pelin_aloitus():
     pg.init()
     global tickit
+    global points
     tickit = pg.time.get_ticks()
     global vel
     vel = 1
     #pg.time.get_ticks()
-    #if tickit < 100000:
-        #vel = 10
+   # if tickit < 100000:
+    #    vel = 10
     #else:
-       # vel = 1
+    #    vel = 1
     pg.display.flip()
     playerArea.left = 30
     playerArea.top = 723
@@ -140,10 +141,12 @@ def pelin_aloitus():
 
             if event.type == KEYDOWN and event.key == K_DOWN:
                 global press_down, press_up
+                points+=1
                 press_down = True
                 press_up = False
             if event.type == KEYDOWN and event.key == K_UP:
                 press_down = False
+                points+=1
                 press_up = True  
                     
         # Hahmon ohjaustoimintoja
@@ -157,12 +160,12 @@ def pelin_aloitus():
             pg.display.flip()
 
         # Häviämistoiminnot
-        if playerArea.y == border_top.y + border_top.height - vel: #Jos pelaaja osuu ylärajaan, peli päättyy
+        if playerArea.y <= border_top.y + border_top.height - vel: #Jos pelaaja osuu ylärajaan, peli päättyy
             failup()
             game_over()
             break
             
-        if playerArea.y == border_btm.y - playerArea.height: #Jos pelaaja osuu alarajaan, peli päättyy
+        if playerArea.y >= border_btm.y - playerArea.height: #Jos pelaaja osuu alarajaan, peli päättyy
             failbtm()
             game_over()
             break
