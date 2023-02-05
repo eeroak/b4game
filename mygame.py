@@ -9,9 +9,8 @@ from pygame import mixer
 
 pg.init()
 
-#tekee näytön skaalauksesta mukautuvan jokaiselle resoluutiolle (alle full HD tuskin toimii kunnolla)
 user32 = ctypes.windll.user32
-user32.SetProcessDPIAware(2)
+user32.SetProcessDPIAware(2) #tekee näytön skaalauksesta mukautuvan jokaiselle resoluutiolle (alle full HD tuskin toimii kunnolla)
 width = 1920
 lenght = 1080
 dispSurf = pg.display.set_mode((width,lenght), vsync=1)
@@ -25,8 +24,11 @@ ylanappi = pg.image.load("ylanappi.png")
 alakerta = pg.image.load("alakerta.png").convert()
 alanappi = pg.image.load("alanappi.jpg").convert()
 gover = pg.image.load("gameover.jpg").convert()
+fail = pg.image.load("hissiukko_suru.png").convert()
+hissi_auki_ala = pg.image.load("Hissipeli_alaovi_auki.jpg").convert()
+hissi_auki_yla = pg.image.load("Hissipeli_ylaovi_auki.jpg").convert()
 
-# pelaajan rajojen placeholderit
+# pelin rajat
 border_top = pg.Rect(30, 220, 325, 1)
 border_btm = pg.Rect(30, 1015, 325, 1)
 
@@ -36,28 +38,18 @@ ylanappi.set_colorkey((255,255,255))
 alakerta.set_colorkey((255,255,255))
 alanappi.set_colorkey((255,255,255))
 player.set_colorkey((255,255,255))
-
-dispSurf.blit(level, (0,0))
-dispSurf.blit(player, (400,300))
-dispSurf.blit(ylakerta,(200,300))
-dispSurf.blit(ylanappi,(200,300))
-dispSurf.blit(alakerta,(500,600))
-dispSurf.blit(alanappi,(500,600))
-dispSurf.blit(gover,(0,0))
-
-pg.display.flip()
-
-playerArea = player.get_rect()
+fail.set_colorkey((255,255,255))
 
 #pelaajan hahmon aloituspaikan liikuttaminen (pikseleissä)
+playerArea = player.get_rect()
 playerArea.left = 30
 playerArea.top = 723
 
 # pelin taustaäänet/valikkoäänet
-""" mixer.init() 
+mixer.init() 
 mixer.music.load('Doom.ogg')
 mixer.music.play(-1)
-mixer.music.set_volume(0.5) """
+mixer.music.set_volume(0.1) # oletusäänenvoimakkuus
 sEngine = sound.Sound()
 sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
 sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
@@ -66,13 +58,26 @@ press_down = False
 press_up = False
 
 def failup():
+    global fail, press_up
+    fail.set_colorkey((255,255,255))
+    dispSurf.blit(hissi_auki_yla,(0,0))
+    dispSurf.blit(ylakerta,(280,200))
+    dispSurf.blit(alakerta,(280,725))
+    dispSurf.blit(fail,(playerArea))
     pg.display.flip()
-    global press_up
     press_up=False
+    pg.time.wait(2500)
 
 def failbtm():
-    global press_down
+    global press_down, fail
+    player.set_colorkey((255,255,255))
+    dispSurf.blit(hissi_auki_ala,(0,0))
+    dispSurf.blit(ylakerta,(280,200))
+    dispSurf.blit(alakerta,(280,725))
+    dispSurf.blit(fail, (playerArea))
+    pg.display.flip()
     press_down = False
+    pg.time.wait(2500)
 
 def game_over():
     print("game over")
@@ -83,16 +88,14 @@ def game_over():
 def change_vol(value):
     vol = value
     mixer.music.set_volume(vol)
-    print("Changed game volume to", vol)
     
 def pelin_aloitus():
-
-    pg.init()
-    pg.display.flip()
+    player = pg.image.load("hissiukko ilo.png").convert()
+    player.set_colorkey((255,255,255))
     playerArea.left = 30
     playerArea.top = 723
     dispSurf.blit(level, (0,0))
-    dispSurf.blit(player, playerArea)
+    dispSurf.blit(player, (playerArea))
     dispSurf.blit(ylakerta,(280,200))
     dispSurf.blit(alakerta,(280,725))
     pg.draw.rect(dispSurf, (255,255,255), border_top)
@@ -100,14 +103,14 @@ def pelin_aloitus():
 
     while True:
 
-        # looppi joka tarkastaa jos pelaaja painaa esciä tai sulkee ikkunan
+        # looppi joka tarkastaa näppäimien painalluksia
         for event in pg.event.get(): 
-            if event.type == pg.QUIT: # jos pelaaja sulkee ikkunan((
-                pg.quit()             # peli sulkeutuu
+            if event.type == pg.QUIT: # jos pelaaja sulkee ikkunan
+                pg.quit()             # peli sulkeutuu ))
                 sys.exit()    
             if event.type == KEYDOWN: 
                 if event.key == K_ESCAPE: # jos pelaaja painaa esciä
-                    menu()
+                    menu()                # peli palaa takaisin päävalikkoon
                     
             if event.type == KEYDOWN and event.key == K_DOWN:
                 global press_down, press_up
@@ -115,7 +118,7 @@ def pelin_aloitus():
                 press_up = False
             if event.type == KEYDOWN and event.key == K_UP:
                 press_down = False
-                press_up = True  
+                press_up = True
 
         # Hahmon ohjaustoimintoja
         if press_down:
@@ -161,27 +164,30 @@ def menu():
                             )
     asetukset = pygame_menu.Menu('Asetukset', 1280, 720, center_content=True, 
                             mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="2",)
-    ohjeet = pygame_menu.Menu ('Ohjeet', 1280, 720, center_content=True,
+    ohjeet = pygame_menu.Menu ('Peliohjeet', 1280, 720, center_content=True,
                            mouse_enabled=True, theme=pygame_menu.themes.THEME_DARK, menu_id="3",)                        
 
     #Päävalikon määrittelyä
     menu.set_sound(sEngine, recursive=True)
-    menu.add.button("Pelaa", pelin_aloitus, accept_kwargs = True, background_color = (0,0,0))
-    menu.add.button("Asetukset", asetukset, accept_kwargs = True, background_color = (0,0,0))
-    menu.add.button("Ohjeet", ohjeet, accept_kwargs = True, background_color = (0,0,0))
-    menu.add.button("Lopeta", pygame_menu.events.EXIT, accept_kwargs = True, background_color = (0,0,0))
+    menu.add.button("Pelaa", pelin_aloitus,background_color=(157,11,14),border_color = (0,0,0),border_width=(5),font_color =(0,0,0))
+    menu.add.label("")
+    menu.add.button("Asetukset", asetukset,background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
+    menu.add.label("")
+    menu.add.button("Peliohjeet", ohjeet,background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
+    menu.add.label("")
+    menu.add.button("Lopeta", pygame_menu.events.EXIT,background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
     
     #Asetussivun määrittely
     asetukset.set_sound(sEngine, recursive=True)
     asetukset.add.range_slider('Äänenvoimakkuus', 0.5, (0.0,1), 0.1, 
-                            value_format=lambda x: str((x)), onchange=change_vol) # äänenvoimakkuuden säätö, joka ottaa rangesliderin arvon, tallentaa sen muuttujaan valueja antaa sen funktiolle change_vol
+                            value_format=lambda x: str((x)), onchange=change_vol) # äänenvoimakkuuden säätö, joka ottaa rangesliderin arvon, tallentaa sen muuttujaan value ja antaa sen funktiolle change_vol
     asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
     
     # Peliohjeet
     ohjeet.set_sound(sEngine, recursive=True)
-    ohjeet.add.text_input("Paina NUOLIALAS näppäintä kun hissi saavuttaa ylätasanteen")
-    ohjeet.add.text_input("Paina NUOLIYLÖS näppäintä kun hissi saavuttaa alatasanteen")
-    ohjeet.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
+    ohjeet.add.label("Paina NUOLIALAS näppäintä ennen kuin hissi saavuttaa ylärajan",font_size=(35))
+    ohjeet.add.label("Paina NUOLIYLÖS näppäintä ennen kuin hissi saavuttaa alarajan",font_size=(35),padding=(25,100,200,100)) #top, right, bottom, left
+    ohjeet.add.button('Palaa päävalikkoon',pygame_menu.events.RESET)
 
     menu.mainloop(dispSurf)
 menu()
