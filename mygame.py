@@ -62,8 +62,8 @@ sEngine = sound.Sound()
 sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
 sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
 
-press_down = False
-press_up = False
+press_down = K_DOWN
+press_up = K_UP
 
 def failup():
     pg.display.flip()
@@ -110,11 +110,12 @@ def pelin_aloitus():
                     menu()# palaa takaisin päävalikkoon
                     
         # Hahmon ohjaustoimintoja
-        if press_down:
+        pressings = pg.key.get_pressed()
+        if pressings[K_DOWN]:
             playerArea.move_ip((0,2))
             dispSurf.blit(alanappi,(280,725))
             pg.display.flip()
-        if press_up:
+        if pressings[K_UP]:
             playerArea.move_ip((0,-2))
             dispSurf.blit(ylanappi,(280,200))
             pg.display.flip()
