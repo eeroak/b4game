@@ -54,16 +54,19 @@ sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
 press_down = False
 press_up = False
 
+#pistelaskurin graafinen esitysmäärittely
 black = (0,0,0)
 scorefont = pg.font.SysFont("comicsansmms", size=40)
 points = 0
 
+# pistelaskuri
 def score():
     global points
     text = scorefont.render("SCORE: "+ str(points), True, black)
     dispSurf.blit(text, (125,20))
     pg.display.flip()
-
+    
+# funktio pelin resetoimiselle jos pelaaja osuu ylärajaan
 def failup():
     global fail, press_up
     fail.set_colorkey((255,255,255))
@@ -74,7 +77,8 @@ def failup():
     pg.display.flip()
     press_up=False
     pg.time.wait(2500)
-
+    
+# funktio pelin resetoimiselle jos pelaaja osuu alarajaan
 def failbtm():
     global press_down, fail
     player.set_colorkey((255,255,255))
@@ -85,12 +89,14 @@ def failbtm():
     pg.display.flip()
     press_down = False
     pg.time.wait(2500)
-
+    
+# game-over ruudun rendröintifunktio, mikäli pelaaja osuu rajoihin
 def game_over():
     dispSurf.blit(gover,(0,0))
     pg.display.flip()
     sleep(3.5)
     
+# pelin voittoruudun renderöintifunktio, mikäli pelaaja voittaa pelin
 def game_win():
     global press_down, press_up
     dispSurf.blit(voitto,(0,0))
@@ -104,10 +110,9 @@ def change_vol(value):
     mixer.music.set_volume(vol)
     
 def pelin_aloitus():
+    #resetoi aina pelin alussa kaikki oleelliset asiat
     pg.init()
-    global tickit
     global points
-    tickit = pg.time.get_ticks()
     pg.display.flip()
     player = pg.image.load("hissiukko ilo.png").convert()
     player.set_colorkey((255,255,255))
@@ -121,7 +126,8 @@ def pelin_aloitus():
     pg.draw.rect(dispSurf, (255,255,255), border_btm)
     vel = 1.0
     points = 0
-
+    
+    # varsinainen pelin "aloitus"
     while True:
         # looppi joka tarkastaa näppäimien painalluksia
         for event in pg.event.get(): 
@@ -132,6 +138,7 @@ def pelin_aloitus():
                 if event.key == K_ESCAPE: # jos pelaaja painaa esciä
                     menu()                # peli palaa takaisin päävalikkoon
                     
+            # liikkumissysteemi ja pistelaskuri nappien painalluksilla        
             if event.type == KEYDOWN and event.key == K_DOWN:
                 global press_down, press_up
                 points+=1
@@ -141,7 +148,8 @@ def pelin_aloitus():
                 points+=1
                 press_down = False
                 press_up = True
-                   
+    
+        # pelin voittomääritykset, jos pelaaja saa 100 pistettä, peli loppuu           
         if points > 10:
             vel = 2
         if points > 20:
@@ -153,9 +161,8 @@ def pelin_aloitus():
         if points > 100:
             game_win()
             break
-
-
-        # Hahmon ohjaustoimintoja
+        
+        # pelihahmon liikuttamisen nopeudet
         if press_down:
             playerArea.move_ip((0,vel))
             dispSurf.blit(alanappi,(280,725))
@@ -170,7 +177,6 @@ def pelin_aloitus():
             failup()
             game_over()
             break
-            
         if playerArea.y >= border_btm.y - playerArea.height: #Jos pelaaja osuu alarajaan, peli päättyy
             failbtm()
             game_over()
@@ -183,22 +189,26 @@ def pelin_aloitus():
         dispSurf.blit(alakerta,(280,725))
         pg.draw.rect(dispSurf, (255,255,255), border_top)
         pg.draw.rect(dispSurf, (255,255,255), border_btm)
-
-        # tässä päivitetään esim. näppäimenpainallukset ruudulle aina loopin lopussa
+        
         score()
         pg.display.flip()
         pass
 
 def menu():
+    # pelin musiikki
     mixer.init() 
     mixer.music.load('Doom.ogg')
     mixer.music.play(-1)
     mixer.music.set_volume(0.1)
+    
+    #kustomoitu teema peliin
     mytheme = pygame_menu.themes.THEME_DARK.copy()
     myimage = pygame_menu.baseimage.BaseImage(("Hissipeli.jpg"),
         drawing_mode = pygame_menu.baseimage.IMAGE_MODE_REPEAT_XY
     )
     mytheme.background_color = myimage
+    
+    # tässä luodaan 3 eri valikkoa 
     menu = pygame_menu.Menu("",1920, 1080, center_content=True, 
                             mouse_enabled=True, theme=mytheme, menu_id="1",
                             )
@@ -209,13 +219,13 @@ def menu():
 
     #Päävalikon määrittelyä
     menu.set_sound(sEngine, recursive=True)
-    menu.add.button("Pelaa", pelin_aloitus,background_color=(157,11,14),border_color = (0,0,0),border_width=(5),font_color =(0,0,0))
+    menu.add.button("Pelaa",pelin_aloitus,background_color=(157,11,14),border_color = (0,0,0),border_width=(5),font_color =(0,0,0))
     menu.add.label("")
-    menu.add.button("Asetukset", asetukset,background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
+    menu.add.button("Asetukset",asetukset,background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
     menu.add.label("")
-    menu.add.button("Peliohjeet", ohjeet,background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
+    menu.add.button("Peliohjeet",ohjeet,background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
     menu.add.label("")
-    menu.add.button("Lopeta", pygame_menu.events.EXIT,background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
+    menu.add.button("Lopeta",pygame_menu.events.EXIT,background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
     
     #Asetussivun määrittely
     asetukset.set_sound(sEngine, recursive=True)
@@ -224,7 +234,7 @@ def menu():
     asetukset.add.label("")
     asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET, background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
     
-    # Peliohjeet
+    # Peliohjeet- sivun määrittely
     ohjeet.set_sound(sEngine, recursive=True)
     ohjeet.add.label("Pelin voittaa kun saavuttaa 100 pistettä",font_size=(35),font_color=(0,0,0),background_color=(157,11,14),padding=(0,280,0,300))
     ohjeet.add.label("Jokaisesta painalluksesta saa yhden pisteen",font_size=(35),font_color=(0,0,0),background_color=(157,11,14),padding=(0,306,0,200))
