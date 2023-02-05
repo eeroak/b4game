@@ -56,7 +56,7 @@ press_up = False
 
 #pistelaskurin graafinen esitysmäärittely
 black = (0,0,0)
-scorefont = pg.font.SysFont("comicsansmms", size=40)
+scorefont = pg.font.SysFont("comicsansmms", size=50)
 points = 0
 
 # pistelaskuri
@@ -103,7 +103,7 @@ def game_win():
     pg.display.flip()
     press_down = False
     press_up=False
-    sleep(3.5)
+    sleep(4)
 
 def change_vol(value):
     vol = value
