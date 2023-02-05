@@ -111,7 +111,7 @@ def pelin_aloitus():
     global points
     tickit = pg.time.get_ticks()
     global vel
-    vel = 1
+    vel = 1.0
     #pg.time.get_ticks()
    # if tickit < 100000:
     #    vel = 10
@@ -129,6 +129,8 @@ def pelin_aloitus():
     aika = 3000
 
     while True:
+        if points >= 5:
+            vel == 1.5
         pg.time.set_timer(vel + 100, 500)
         # looppi joka tarkastaa jos pelaaja painaa esciä tai sulkee ikkunan
         for event in pg.event.get(): 
