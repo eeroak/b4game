@@ -47,11 +47,6 @@ playerArea.left = 30
 playerArea.top = 723
 
 # pelin taustaäänet/valikkoäänet
-""" mixer.init() 
-mixer.music.load('Doom.ogg')
-mixer.music.play(-1)
-mixer.music.set_volume(0.1) """ # oletusäänenvoimakkuus
-
 sEngine = sound.Sound()
 sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
 sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
@@ -195,6 +190,10 @@ def pelin_aloitus():
         pass
 
 def menu():
+    mixer.init() 
+    mixer.music.load('Doom.ogg')
+    mixer.music.play(-1)
+    mixer.music.set_volume(0.1)
     mytheme = pygame_menu.themes.THEME_DARK.copy()
     myimage = pygame_menu.baseimage.BaseImage(("Hissipeli.jpg"),
         drawing_mode = pygame_menu.baseimage.IMAGE_MODE_REPEAT_XY
@@ -220,14 +219,14 @@ def menu():
     
     #Asetussivun määrittely
     asetukset.set_sound(sEngine, recursive=True)
-    asetukset.add.range_slider('Äänenvoimakkuus', 0.5, (0.0,1), 0.1, 
+    asetukset.add.range_slider('Äänenvoimakkuus', 0.1, (0.0,1), 0.1, 
                             value_format=lambda x: str((x)), onchange=change_vol, background_color=(157,11,14),border_width=(5),font_color=(0,0,0)) # äänenvoimakkuuden säätö, joka ottaa rangesliderin arvon, tallentaa sen muuttujaan value ja antaa sen funktiolle change_vol
     asetukset.add.label("")
     asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET, background_color=(157,11,14),border_color=(0,0,0),border_width=(5),font_color=(0,0,0))
     
     # Peliohjeet
     ohjeet.set_sound(sEngine, recursive=True)
-    ohjeet.add.label("Pelin voittaa kun saavuttaa 100 pistettä",font_size=(35),font_color=(0,0,0),background_color=(157,11,14),padding=(0,300,0,300))
+    ohjeet.add.label("Pelin voittaa kun saavuttaa 100 pistettä",font_size=(35),font_color=(0,0,0),background_color=(157,11,14),padding=(0,280,0,300))
     ohjeet.add.label("Jokaisesta painalluksesta saa yhden pisteen",font_size=(35),font_color=(0,0,0),background_color=(157,11,14),padding=(0,306,0,200))
     ohjeet.add.label("Paina NUOLIALAS näppäintä ennen kuin hissi saavuttaa ylärajan",font_size=(35),font_color=(0,0,0),background_color=(157,11,14),padding=(0,83,0,100))
     ohjeet.add.label("Paina NUOLIYLÖS näppäintä ennen kuin hissi saavuttaa alarajan",font_size=(35),font_color=(0,0,0),background_color=(157,11,14),padding=(0,80,0,100))
