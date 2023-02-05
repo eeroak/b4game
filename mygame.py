@@ -54,16 +54,16 @@ playerArea.left = 30
 playerArea.top = 723
 
 # pelin taustaäänet/valikkoäänet
-mixer.init() 
+""" mixer.init() 
 mixer.music.load('Doom.ogg')
 mixer.music.play(-1)
-mixer.music.set_volume(0.5)
+mixer.music.set_volume(0.5) """
 sEngine = sound.Sound()
 sEngine.set_sound(sound.SOUND_TYPE_WIDGET_SELECTION,('menuselect.ogg'))
 sEngine.set_sound(sound.SOUND_TYPE_CLOSE_MENU,('menuselect.ogg'))
 
-press_down = K_DOWN
-press_up = K_UP
+press_down = False
+press_up = False
 
 def failup():
     pg.display.flip()
@@ -107,16 +107,23 @@ def pelin_aloitus():
                 sys.exit()    
             if event.type == KEYDOWN: 
                 if event.key == K_ESCAPE: # jos pelaaja painaa esciä
-                    menu()# palaa takaisin päävalikkoon
+                    menu()
                     
+            if event.type == KEYDOWN and event.key == K_DOWN:
+                global press_down, press_up
+                press_down = True
+                press_up = False
+            if event.type == KEYDOWN and event.key == K_UP:
+                press_down = False
+                press_up = True  
+
         # Hahmon ohjaustoimintoja
-        pressings = pg.key.get_pressed()
-        if pressings[K_DOWN]:
-            playerArea.move_ip((0,2))
+        if press_down:
+            playerArea.move_ip((0,1))
             dispSurf.blit(alanappi,(280,725))
             pg.display.flip()
-        if pressings[K_UP]:
-            playerArea.move_ip((0,-2))
+        if press_up:
+            playerArea.move_ip((0,-1))
             dispSurf.blit(ylanappi,(280,200))
             pg.display.flip()
 
@@ -130,6 +137,7 @@ def pelin_aloitus():
             failbtm()
             game_over()
             break
+        
         # renderöi kaikki objektit tarkoille paikoilleen
         dispSurf.blit(level, (0,0)) # jos tätä ei tehdä, kaikesta liikkuvasta jää niin sanottu jälki perään
         dispSurf.blit(player, playerArea)
@@ -162,11 +170,13 @@ def menu():
     menu.add.button("Asetukset", asetukset, accept_kwargs = True, background_color = (0,0,0))
     menu.add.button("Ohjeet", ohjeet, accept_kwargs = True, background_color = (0,0,0))
     menu.add.button("Lopeta", pygame_menu.events.EXIT, accept_kwargs = True, background_color = (0,0,0))
+    
     #Asetussivun määrittely
     asetukset.set_sound(sEngine, recursive=True)
     asetukset.add.range_slider('Äänenvoimakkuus', 0.5, (0.0,1), 0.1, 
                             value_format=lambda x: str((x)), onchange=change_vol) # äänenvoimakkuuden säätö, joka ottaa rangesliderin arvon, tallentaa sen muuttujaan valueja antaa sen funktiolle change_vol
     asetukset.add.button('Palaa päävalikkoon', pygame_menu.events.RESET)
+    
     # Peliohjeet
     ohjeet.set_sound(sEngine, recursive=True)
     ohjeet.add.text_input("Paina NUOLIALAS näppäintä kun hissi saavuttaa ylätasanteen")
